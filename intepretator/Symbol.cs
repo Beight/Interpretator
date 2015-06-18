@@ -7,16 +7,56 @@ namespace Intepretator
 {
     class Symbol
     {
+        ///<summary>
+        ///Symbol id(1, 2, ...).
+        ///</summary>
         private int m_id;
+        ///<summary>
+        ///Symbol type(int, float, ...).
+        ///</summary>
         private int m_type;
+        ///<summary>
+        ///Symbol Kind(simple, array, func).
+        ///</summary>
         private int m_kind;
+        ///<summary>
+        ///<para>Info depending on kind.</para>
+        ///<para>Kind = simple, not used.</para>
+        ///<para>Kind = array, number of indices.</para>
+        ///<para>Kind = function, number of parameters.</para>
+        ///</summary>
         private int m_info;
+        ///<summary>
+        ///<para>Info depending on kind.</para>
+        ///<para>Kind = simple, not used.</para>
+        ///<para>Kind = array, not used.</para>
+        ///<para>Kind = function, defining block index.</para>
+        ///</summary>
         private int m_info2;
+        ///<summary>
+        ///<para>Info depending on kind</para>
+        ///<para>Kind = simple, not used.</para>
+        ///<para>Kind = array, qualification(if ref)/0.</para>
+        ///<para>Kind = function, qualification(if ref)/0.</para>
+        ///</summary>
         private int m_info3;
+        ///<summary>
+        ///Relative address or zero.
+        ///</summary>
         private int m_address;
+        ///<summary>
+        ///Unknown.
+        ///</summary>
         private int m_boundry;
+        ///<summary>
+        ///Symbol value if it has one.
+        ///</summary>
         private int m_value;
-        private string m_text;
+        ///<summary>
+        ///Symbol name in string form.
+        ///</summary>
+        private string m_text; 
+
 
         public Symbol(int p_id, int p_type, int p_kind, int p_info, int p_info2, int p_info3, int p_address, string p_text, int p_boundry)
         {
