@@ -7,23 +7,23 @@ namespace Intepretator
 {
     class Block
     {
-        private int m_Nr;
-        private int m_StaticF;
-        private int m_SymbolCount;
-        private int m_Memory;
-        private int m_TokenCount;
-        private Token[] m_Tokens;
-        private Symbol[] m_Symbols;
+        private int m_nr;
+        private int m_staticF;
+        private int m_symbolCount;
+        private int m_memory;
+        private int m_tokenCount;
+        private Token[] m_tokens;
+        private Symbol[] m_symbols;
 
-        public Block(int p_Nr, int p_StaticF, int p_Memory, int p_SymbolCount, int p_TokenCount)
+        public Block(int p_nr, int p_staticF, int p_memory, int p_symbolCount, int p_tokenCount)
         {
-            m_Nr = p_Nr;
-            m_StaticF = p_StaticF;
-            m_SymbolCount = p_SymbolCount;
-            m_Memory = p_Memory;
-            m_TokenCount = p_TokenCount;
-            m_Tokens = new Token[m_TokenCount];
-            m_Symbols = new Symbol[m_SymbolCount];
+            m_nr = p_nr;
+            m_staticF = p_staticF;
+            m_symbolCount = p_symbolCount;
+            m_memory = p_memory;
+            m_tokenCount = p_tokenCount;
+            m_tokens = new Token[m_tokenCount];
+            m_symbols = new Symbol[m_symbolCount];
 
         }
 
@@ -33,41 +33,41 @@ namespace Intepretator
 
         public int getBlockNr()
         {
-            return m_Nr;
+            return m_nr;
         }
         public int getStaticF()
         {
-            return m_StaticF;
+            return m_staticF;
         }
         public int getSymbolCount()
         {
-            return m_SymbolCount;
+            return m_symbolCount;
         }
         public int getTokenCount()
         {
-            return m_TokenCount;
+            return m_tokenCount;
         }
         public int getMemory()
         {
-            return m_Memory;
+            return m_memory;
         }
-        public Token getToken(int p_Index)
+        public Token getToken(int p_index)
         {
-            return m_Tokens[p_Index];
+            return m_tokens[p_index];
         }
-        public Symbol getSymbol(int p_Index)
+        public Symbol getSymbol(int p_index)
         {
-            return m_Symbols[p_Index];
-        }
-
-        public void setToken(int p_Index, Token p_Token)
-        {
-            m_Tokens[p_Index] = p_Token;
+            return m_symbols[p_index];
         }
 
-        public void setSymbol(int p_Index, Symbol p_Symbol)
+        public void setToken(int p_index, Token p_token)
         {
-            m_Symbols[p_Index] = p_Symbol;
+            m_tokens[p_index] = p_token;
+        }
+
+        public void setSymbol(int p_index, Symbol p_symbol)
+        {
+            m_symbols[p_index] = p_symbol;
         }
     }
 }
