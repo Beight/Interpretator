@@ -63,6 +63,9 @@ namespace Intepretator
                 {
                     //Symbol
                     case 1:
+                        ///TODO: search for symbol to find if it's a function or not.
+                        //m_arStack[m_current].searchSymbol(m_arStack[m_current].getToken(i).)
+
                         if (m_arStack[m_current].getToken(i).getCode() > 18)
                         {
                             OperandAdd(i);
@@ -95,6 +98,7 @@ namespace Intepretator
                         }
                         else
                         {
+                            //char c = m_matrix.GetAction(12, 10);
                             Actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
                         }
                         break;

@@ -80,6 +80,16 @@ namespace Intepretator
         {
             return m_symbols[p_index];
         }
+        public Symbol searchSymbol(int p_id)
+        {
+            for(int i = 0; i < m_symbolCount; i++)
+            {
+                if(m_symbols[i].getId() == p_id)
+                    return m_symbols[i];
+            }
+
+            return null;
+        }
 
         public void setToken(int p_index, Token p_token)
         {
