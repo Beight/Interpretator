@@ -7,30 +7,30 @@ namespace Intepretator
 {
     class AR
     {
-        private int m_StaticF;
-        private int m_DynamicF;
-        private int m_ReturnAddress;
-        private Template m_TemplateAddress;
+        private int m_staticF;
+        private int m_dynamicF;
+        private int m_returnAddress;
+        private Template m_templateAddress;
 
-        public AR(int p_DynamicF, Template p_TemplateAddress)
+        public AR(int p_dynamicF, Template p_templateAddress)
         {
-            m_DynamicF = p_DynamicF;
-            m_TemplateAddress = p_TemplateAddress;
-            m_StaticF = m_TemplateAddress.getBlock().getStaticF();
+            m_dynamicF = p_dynamicF;
+            m_templateAddress = p_templateAddress;
+            m_staticF = m_templateAddress.getBlock().getStaticF();
         }
 
         public Block getTempBlock()
         {
-            return m_TemplateAddress.getBlock();
+            return m_templateAddress.getBlock();
         }
 
         public int getStaticF()
         {
-            return m_StaticF;
+            return m_staticF;
         }
         public int getDynamicF()
         {
-            return m_DynamicF;
+            return m_dynamicF;
         }
     }
 }

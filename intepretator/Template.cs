@@ -9,9 +9,9 @@ namespace Intepretator
     {
         private Block m_block;
 
-        public Template(Block p_Block)
+        public Template(Block p_block)
         {
-            m_block = p_Block;
+            m_block = p_block;
         }
 
         public Block getBlock()

@@ -8,52 +8,52 @@ namespace Intepretator
 {
     class Token
     {
-        private int m_Code;
-        private int m_Type;
-        private int m_Value;
-        private string m_Text;
+        private int m_code;
+        private int m_type;
+        private int m_value;
+        private string m_text;
 
 
-        public Token(int p_Code, int p_Type, string p_Text)
+        public Token(int p_code, int p_type, string p_text)
         {
-            m_Code = p_Code;
-            m_Type = p_Type;
-            m_Text = p_Text;
+            m_code = p_code;
+            m_type = p_type;
+            m_text = p_text;
 
-            if (p_Type == 2)
-                m_Value = int.Parse(m_Text);
+            if (p_type == 2)
+                m_value = int.Parse(m_text);
         }
 
-        public Token(int p_Value, int p_Code, int p_Type)
+        public Token(int p_value, int p_code, int p_type)
         {
-            m_Code = p_Code;
-            m_Type = p_Type;
-            m_Value = p_Value;
+            m_code = p_code;
+            m_type = p_type;
+            m_value = p_value;
         }
 
         public int getType()
         {
-            return m_Type;
+            return m_type;
         }
         public int getCode()
         {
-            return m_Code;
+            return m_code;
         }
         public int getValue()
         {
-            return m_Value;
+            return m_value;
         }
-        public void setValue(int p_Value)
+        public void setValue(int p_value)
         {
-            m_Value = p_Value;
+            m_value = p_value;
         }
         public string getText()
         {
-            return m_Text;
+            return m_text;
         }
-        public void setText(string p_Text)
+        public void setText(string p_text)
         {
-            m_Text = p_Text;
+            m_text = p_text;
         }
 
     }

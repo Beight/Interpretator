@@ -7,42 +7,42 @@ namespace Intepretator
 {
     class Symbol
     {
-        private int m_Id;
-        private int m_Type;
-        private int m_Kind;
-        private int m_Info;
-        private int m_Info2;
-        private int m_Info3;
-        private int m_Address;
-        private int m_Boundry;
-        private int m_Value;
-        private string m_Text;
+        private int m_id;
+        private int m_type;
+        private int m_kind;
+        private int m_info;
+        private int m_info2;
+        private int m_info3;
+        private int m_address;
+        private int m_boundry;
+        private int m_value;
+        private string m_text;
 
-        public Symbol(int p_Id, int p_Type, int p_Kind, int p_Info, int p_Info2, int p_Info3, int p_Address, string p_Text, int p_Boundry)
+        public Symbol(int p_id, int p_type, int p_kind, int p_info, int p_info2, int p_info3, int p_address, string p_text, int p_boundry)
         {
-            m_Id = p_Id;
-            m_Type = p_Type;
-            m_Kind = p_Kind;  
-            m_Info = p_Info;
-            m_Info2 = p_Info2;
-            m_Info3 = p_Info3;
-            m_Address = p_Address;
-            m_Text = p_Text;
-            m_Boundry = p_Boundry;
+            m_id = p_id;
+            m_type = p_type;
+            m_kind = p_kind;  
+            m_info = p_info;
+            m_info2 = p_info2;
+            m_info3 = p_info3;
+            m_address = p_address;
+            m_text = p_text;
+            m_boundry = p_boundry;
         }
 
         public string getText()
         {
-            return m_Text;
+            return m_text;
         }
         public int getValue()
         {
-            return m_Value;
+            return m_value;
         }
 
-        public void setValue(int p_Value)
+        public void setValue(int p_value)
         {
-            m_Value = p_Value;
+            m_value = p_value;
         }
     }
 }
