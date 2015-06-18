@@ -8,9 +8,21 @@ namespace Intepretator
 {
     class Token
     {
+        ///<summary>
+        ///Token code,
+        ///</summary>
         private int m_code;
+        ///<summary>
+        ///Token type
+        ///</summary>
         private int m_type;
+        ///<summary>
+        ///Token value
+        ///</summary>
         private int m_value;
+        ///<summary>
+        ///Token name in string form.
+        ///</summary>
         private string m_text;
 
 

@@ -7,12 +7,33 @@ namespace Intepretator
 {
     class Block
     {
+        ///<summary>
+        ///Block nr, Identifies the block.
+        ///</summary>
         private int m_nr;
+        ///<summary>
+        ///Static father, id to block surrounding this block. Equals -1 if this is the first block.
+        ///</summary>
         private int m_staticF;
+        ///<summary>
+        ///Number of symbols contained in the block.
+        ///</summary>
         private int m_symbolCount;
+        ///<summary>
+        ///Memory required by the block. Not used at the moment.
+        ///</summary>
         private int m_memory;
+        ///<summary>
+        ///Number of tokens contained in the block.
+        ///</summary>
         private int m_tokenCount;
+        ///<summary>
+        ///List of the block's tokens.
+        ///</summary>
         private Token[] m_tokens;
+        ///<summary>
+        ///List of the block's symbols.
+        ///</summary>
         private Symbol[] m_symbols;
 
         public Block(int p_nr, int p_staticF, int p_memory, int p_symbolCount, int p_tokenCount)
