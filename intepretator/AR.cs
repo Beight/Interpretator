@@ -40,6 +40,10 @@ namespace Intepretator
         {
             return m_block.getSymbolCount();
         }
+        public int getTokenCount()
+        {
+            return m_block.getTokenCount();
+        }
         public int getDynamicF()
         {
             return m_dynamicF;

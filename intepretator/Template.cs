@@ -9,7 +9,7 @@ namespace Intepretator
     //The AR class copy data from the template class to create executable blocks.
     class Template
     {
-        private Block m_block;
+        private static Block m_block;
 
         public Template(Block p_block)
         {
