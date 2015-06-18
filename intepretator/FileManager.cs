@@ -67,6 +67,7 @@ namespace Intepretator
             }
             catch (System.IndexOutOfRangeException e)
             {
+
                 return;
             }
         }

@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Intepretator
 {
+    //Hold a blueprint on how a block should look like.
+    //The AR class copy data from the template class to create executable blocks.
     class Template
     {
         private Block m_block;
