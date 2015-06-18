@@ -9,7 +9,8 @@ namespace Intepretator
     class Environment
     {
         private Block[] m_BlockArray;
-        private int m_BlockCounter, m_Current;
+        private int m_BlockCounter;
+        private int m_Current;
         private FileManager m_File;
         private List<Token> m_Operat;
         private List<Token> m_Operand;
@@ -37,7 +38,7 @@ namespace Intepretator
             m_ArStack.Add(new AR(m_Current, m_BlockTemplates[b_nr]));
             //Allocate(b_nr, 0);
             SetCurrent();
-            IntepretBlock(b_nr);
+            InterpretBlock(b_nr);
         }
 
 
@@ -52,7 +53,7 @@ namespace Intepretator
         }
 
 
-        public void IntepretBlock(int b_nr)
+        public void InterpretBlock(int b_nr)
         {
             for (int i = 0; i < m_BlockArray[m_Current].getTokenCount(); i++)
                 switch (m_ArStack[m_Current].getTempBlock().getToken(i).getType())
@@ -72,17 +73,19 @@ namespace Intepretator
 
                         }
                         //symId name
-                        continue;
+                        break;
                     case 2:
                         OperandAdd(i);
                         //Int
-                        continue;
+                        break;
                     case 3:
                         //Float
-                        continue;
+                        int a = 0;
+                        break;
                     case 4:
                         //Text
-                        continue;
+                        int b = 0;
+                        break;
                     case 5:
                         if (m_Operat.Count == 0)
                         {
@@ -93,20 +96,20 @@ namespace Intepretator
                             Actions(m_Matrix.GetAction(operatAction(m_Operat[m_Operat.Count - 1].getText()), operatAction(m_ArStack[m_Current].getTempBlock().getToken(i).getText())), i);
                         }
                         //opcode
-                        continue;
+                        break;
                     case 6:
                         //Error
-                        continue;
+                        break;
                     case 7:
                         //line
-                        continue;
+                        break;
                     case 10:
                         m_Tbout.AppendText("Enter Block " + m_ArStack[m_Current].getTempBlock().getToken(i).getCode() + "\n");
                         Enter(m_ArStack[m_Current].getTempBlock().getToken(i).getCode());
                         m_Current = m_ArStack[m_Current].getTempBlock().getStaticF();
                         m_ArStack.RemoveAt(m_ArStack.Count - 1);
                         //call block
-                        continue;
+                        break;
                 }
         }
 
@@ -123,20 +126,20 @@ namespace Intepretator
                 case 'S':
                     m_Tbout.AppendText("case S\n");
                     OperatAdd(i);
-                    if (m_Operat[m_Operat.Count - 1].getText() == "(" && m_Operand[m_Operand.Count - 1].getCode() > 18)
-                    {
-                        m_Operat.RemoveAt(m_Operat.Count - 1);
-                        m_Operat.Add(new Token(0, 0, "F("));
-                    }
+                    //if (m_Operat[m_Operat.Count - 1].getText() == "(" && m_Operand[m_Operand.Count - 1].getCode() > 18)
+                    //{
+                    //    m_Operat.RemoveAt(m_Operat.Count - 1);
+                    //    m_Operat.Add(new Token(0, 0, "F("));
+                    //}
 
                     //stack operator
                     break;
                 case 'A':
-                  //  m_Tbout.AppendText("case A\n");
+                    m_Tbout.AppendText("case A\n");
                     //Accept
                     break;
                 case 'E':
-                  //  m_Tbout.AppendText("case E\n");
+                    m_Tbout.AppendText("case E\n");
                     //error
                     break;
                 case 'F':
@@ -312,13 +315,13 @@ namespace Intepretator
                             int block_count = int.Parse(blockStringArray[i + 1][0]);
                             m_BlockArray = new Block[block_count];
                             m_BlockTemplates = new Template[block_count];
-                            continue;
+                            break;
                         case "##BLOCK##":
                             m_BlockArray[m_BlockCounter] = new Block(int.Parse(blockStringArray[i + 1][0]),
                                 int.Parse(blockStringArray[i + 1][1]), int.Parse(blockStringArray[i + 1][2]),
                                 int.Parse(blockStringArray[i + 1][3]), int.Parse(blockStringArray[i + 1][4]));
                             m_BlockTemplates[m_BlockCounter] = new Template(m_BlockArray[m_BlockCounter]);
-                            continue;
+                            break;
                         case "#KOD#":
                             int t = -1;
                             for (int l = i; l < i + m_BlockArray[m_BlockCounter].getTokenCount(); l++)
@@ -327,7 +330,7 @@ namespace Intepretator
                                                                                 int.Parse(blockStringArray[l + 1][1]), blockStringArray[l + 1][2]));
                                 t++;
                             }
-                            continue;
+                            break;
                         case "#DEKLARATIONER#":
                             int d = -1;
                             for (int l = i; l < i + m_BlockArray[m_BlockCounter].getSymbolCount(); l++)
@@ -339,10 +342,10 @@ namespace Intepretator
                                                                                 blockStringArray[l + 1][9], 0));
                                 d++;
                             }
-                            continue;
+                            break;
                         case "##BLOCKSLUT##":
                             m_BlockCounter++;
-                            continue;
+                            break;
                         case "###PROGRAMSLUT###":
                             Enter(m_Current);
                             break;

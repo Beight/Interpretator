@@ -18,18 +18,23 @@ namespace Intepretator
         {
            
             InitializeComponent();
-            file = new FileManager();
-            enviro = new Environment(file, tbconverted);
+            //file = new FileManager();
+            //enviro = new Environment(file, tbconverted);
         }
 
         private void loadFile_Click(object sender, EventArgs e)
         {
+            tbfile.Clear();
+            file = new FileManager();
             file.Loadfile(tbfile);
-
+            tbconverted.Clear();
+            
         }
 
         private void Convert_Click(object sender, EventArgs e)
         {
+            
+            enviro = new Environment(file, tbconverted);
             enviro.CreateBlocks();
         }
 
