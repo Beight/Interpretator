@@ -48,5 +48,10 @@ namespace Intepretator
         {
             return m_dynamicF;
         }
+
+        public Symbol searchSymbol(int p_id)
+        {
+            return m_block.searchSymbol(p_id);
+        }
     }
 }

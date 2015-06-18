@@ -84,5 +84,10 @@ namespace Intepretator
         {
             m_value = p_value;
         }
+
+        public int getId()
+        {
+            return m_id;
+        }
     }
 }
