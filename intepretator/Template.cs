@@ -9,7 +9,7 @@ namespace Intepretator
     //The AR class copy data from the template class to create executable blocks.
     class Template
     {
-        private static Block m_block;
+        private Block m_block;
 
         public Template(Block p_block)
         {
@@ -19,6 +19,25 @@ namespace Intepretator
         public Block getBlock()
         {
             return m_block;
+        }
+
+        public void setToken(int p_index, Token  p_token)
+        {
+            m_block.setToken(p_index, p_token);
+        }
+
+        public void setSymbol(int p_index, Symbol p_symbol)
+        {
+            m_block.setSymbol(p_index, p_symbol);
+        }
+        public int getTokenCount()
+        {
+            return m_block.getTokenCount();
+        }
+
+        public int getSymbolCount()
+        {
+            return m_block.getSymbolCount();
         }
     }
 }

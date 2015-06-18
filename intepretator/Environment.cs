@@ -8,13 +8,12 @@ namespace Intepretator
 {
     class Environment
     {
-        private Block[] m_blockArray;
         private int m_blockCounter;
         private int m_current;
         private FileManager m_file;
         private List<Token> m_operators;
         private List<Token> m_operands;
-        private Template[] m_blockTemplates;
+        private List<Template> m_blockTemplates;
         private List<AR> m_arStack;
         private RichTextBox m_tbout;
         private MyControl m_matrix;
@@ -29,6 +28,7 @@ namespace Intepretator
             m_operands = new List<Token>();
             m_arStack = new List<AR>();
             m_matrix = new MyControl();
+            //m_blockTemplates.Clear();
             m_current = 0;
         }
         
@@ -315,29 +315,28 @@ namespace Intepretator
                     {
                         case "###PROGRAM###":
                             int block_count = int.Parse(blockStringArray[i + 1][0]);
-                            m_blockArray = new Block[block_count];
-                            m_blockTemplates = new Template[block_count];
+                            m_blockTemplates = new List<Template>(block_count);
                             break;
                         case "##BLOCK##":
-                            m_blockArray[m_blockCounter] = new Block(int.Parse(blockStringArray[i + 1][0]),
-                                int.Parse(blockStringArray[i + 1][1]), int.Parse(blockStringArray[i + 1][2]),
-                                int.Parse(blockStringArray[i + 1][3]), int.Parse(blockStringArray[i + 1][4]));
-                            m_blockTemplates[m_blockCounter] = new Template(m_blockArray[m_blockCounter]);
+                            Block b = new Block(int.Parse(blockStringArray[i + 1][0]),
+                                                   int.Parse(blockStringArray[i + 1][1]), int.Parse(blockStringArray[i + 1][2]),
+                                                   int.Parse(blockStringArray[i + 1][3]), int.Parse(blockStringArray[i + 1][4]));
+                            m_blockTemplates.Add(new Template(b));
                             break;
                         case "#KOD#":
                             int t = -1;
-                            for (int l = i; l < i + m_blockArray[m_blockCounter].getTokenCount(); l++)
+                            for (int l = i; l < i + m_blockTemplates[m_blockCounter].getTokenCount(); l++)
                             {
-                                m_blockArray[m_blockCounter].setToken(t + 1, new Token(int.Parse(blockStringArray[l + 1][0]),
+                                m_blockTemplates[m_blockCounter].setToken(t + 1, new Token(int.Parse(blockStringArray[l + 1][0]),
                                                                                 int.Parse(blockStringArray[l + 1][1]), blockStringArray[l + 1][2]));
                                 t++;
                             }
                             break;
                         case "#DEKLARATIONER#":
                             int d = -1;
-                            for (int l = i; l < i + m_blockArray[m_blockCounter].getSymbolCount(); l++)
+                            for (int l = i; l < i + m_blockTemplates[m_blockCounter].getSymbolCount(); l++)
                             {
-                                m_blockArray[m_blockCounter].setSymbol(d + 1, new Symbol(int.Parse(blockStringArray[l + 1][0]),
+                                m_blockTemplates[m_blockCounter].setSymbol(d + 1, new Symbol(int.Parse(blockStringArray[l + 1][0]),
                                                                                 int.Parse(blockStringArray[l + 1][1]), int.Parse(blockStringArray[l + 1][2]),
                                                                                 int.Parse(blockStringArray[l + 1][3]), int.Parse(blockStringArray[l + 1][4]),
                                                                                 int.Parse(blockStringArray[l + 1][5]), int.Parse(blockStringArray[l + 1][6]),
