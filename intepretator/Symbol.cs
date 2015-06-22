@@ -79,15 +79,28 @@ namespace Intepretator
         {
             return m_value;
         }
-
         public void setValue(int p_value)
         {
             m_value = p_value;
         }
-
         public int getId()
         {
             return m_id;
+        }
+        public int getKind()
+        {
+            return m_kind;
+        }
+        public int getInfo(int p_nr)
+        {
+            if(p_nr == 1)
+                return m_info;
+            if (p_nr == 2)
+                return m_info2;
+            if (p_nr == 3)
+                return m_info3;
+
+            return -1;
         }
     }
 }

@@ -63,8 +63,18 @@ namespace Intepretator
                 {
                     //Symbol
                     case 1:
-                        ///TODO: search for symbol to find if it's a function or not.
-                        //m_arStack[m_current].searchSymbol(m_arStack[m_current].getToken(i).)
+                        //search for symbol to find if it's a function or not.
+                        Symbol tempSym = m_arStack[m_current].searchSymbol(m_arStack[m_current].getToken(i).getCode());
+
+                        if (tempSym != null)
+                        {
+                            if (tempSym.getKind() == 2)
+                            {
+                                Actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
+                                break;
+                            }
+                        }
+
 
                         if (m_arStack[m_current].getToken(i).getCode() > 18)
                         {
@@ -98,7 +108,6 @@ namespace Intepretator
                         }
                         else
                         {
-                            //char c = m_matrix.GetAction(12, 10);
                             Actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
                         }
                         break;
@@ -150,15 +159,24 @@ namespace Intepretator
                     break;
                 case 'F':
                     m_tbout.AppendText("case F\n");
+                    OperatAdd(i);
                     //user function
                     break;
                 case 'C':
                     m_tbout.AppendText("case C\n");
+                    OperatAdd(i);
+                    if(m_operators[m_operators.Count - 2].getText() == "F")
+                    {
+                        m_operators.Add(new Token(m_operators[m_operators.Count - 2].getCode(), m_operators[m_operators.Count - 2].getType(), "F("));
+                        m_operators.RemoveAt(m_operators.Count - 2);
+                        m_operators.RemoveAt(m_operators.Count - 2);    
+                    }
+
                     //function argument
                     break;
                 case 'P':
                     m_tbout.AppendText("case P\n");
-                    //Remove
+                    //Remove(from stack and skip)
                     break;
                 case 'T':
                     m_tbout.AppendText("case T\n");
@@ -166,7 +184,9 @@ namespace Intepretator
                     break;
                 case 'L':
                     m_tbout.AppendText("case L\n");
-                    m_arStack.Add(new AR(0, m_blockTemplates[1]));
+                    Symbol tempSym = m_arStack[m_current].searchSymbol(m_operators[m_operators.Count() - 1].getCode());
+                    //Symbol info2 contains information about which block id contains the function.
+                    Enter(tempSym.getInfo(2));
                     //int temp_par = m_arStack[m_arStack.Count - 1].getBlock().getBlockNr();
                     //AR_stack[AR_stack.Count - 1].GetTempBlock().symbols[i]
                     //transfer last parameter
