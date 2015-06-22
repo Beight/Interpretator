@@ -102,5 +102,15 @@ namespace Intepretator
 
             return -1;
         }
+
+        public int getAddress()
+        {
+            return m_address;
+        }
+
+        public int getType()
+        {
+            return m_type;
+        }
     }
 }

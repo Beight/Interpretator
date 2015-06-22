@@ -35,7 +35,7 @@ namespace Intepretator
         {
             
             enviro = new Environment(file, tbconverted);
-            enviro.CreateBlocks();
+            enviro.createBlocks();
         }
 
         public void tbfile_TextChanged(object sender, EventArgs e)

@@ -31,29 +31,19 @@ namespace Intepretator
             //m_blockTemplates.Clear();
             m_current = 0;
         }
-        
-        //Ett block
-        public void Enter(int b_nr)
-        {
-            m_arStack.Add(new AR(m_current, m_blockTemplates[b_nr]));
-            //Allocate(b_nr, 0);
-            SetCurrent();
-            InterpretBlock(b_nr);
-        }
 
-
-        public void Allocate(int b_nr, int b_lvl)
+        public void allocate(int b_nr, int b_lvl)
         {
         }
 
-        public void SetCurrent()
+        public void setCurrent()
         {
             m_current = m_arStack.Count - 1;
             //sätter current
         }
 
 
-        public void InterpretBlock(int b_nr)
+        public void interpretBlock()
         {
             //Loop through all the tokens
             for (int i = 0; i < m_arStack[m_current].getTokenCount(); i++)
@@ -70,7 +60,7 @@ namespace Intepretator
                         {
                             if (tempSym.getKind() == 2)
                             {
-                                Actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
+                                actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
                                 break;
                             }
                         }
@@ -78,7 +68,7 @@ namespace Intepretator
 
                         if (m_arStack[m_current].getToken(i).getCode() > 18)
                         {
-                            OperandAdd(i);
+                            operandAdd(i);
                         }
                         else
                         {
@@ -92,7 +82,7 @@ namespace Intepretator
                         break;
                     //Int
                     case 2:
-                        OperandAdd(i);                       
+                        operandAdd(i);                       
                         break;
                     //Float
                     case 3:
@@ -104,11 +94,11 @@ namespace Intepretator
                     case 5:
                         if (m_operators.Count == 0)
                         {
-                            OperatAdd(i);
+                            operatAdd(i);
                         }
                         else
                         {
-                            Actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
+                            actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
                         }
                         break;
                     //Error code
@@ -120,27 +110,30 @@ namespace Intepretator
                     //Block calls
                     case 10:
                         m_tbout.AppendText("Enter Block " + m_arStack[m_current].getToken(i).getCode() + "\n");
-                        Enter(m_arStack[m_current].getToken(i).getCode());
-                        m_current = m_arStack[m_current].getStaticF();
+
+                        m_arStack.Add(new AR(m_current, m_blockTemplates[m_arStack[m_current].getToken(i).getCode()]));
+                        setCurrent();
+                        interpretBlock();
+                        m_current = m_arStack[m_current].getDynamicF();
                         m_arStack.RemoveAt(m_arStack.Count - 1);
                         break;
                 }
             }
         }
 
-        public void Actions(char c, int i)
+        public void actions(char c, int i)
         {
             switch (c)
             {
                 case 'U':
                     m_tbout.AppendText("case U\n");
                     //execute
-                    m_tbout.AppendText("Execute " + m_operands[m_operands.Count - 2].getText() + " " + m_operators[m_operators.Count - 1].getText() + " " + m_operands[m_operands.Count - 1].getText() + "\n");
-                    Execute(m_operands[m_operands.Count - 2], m_operators[m_operators.Count - 1], m_operands[m_operands.Count - 1], i);
+                    m_tbout.AppendText("execute " + m_operands[m_operands.Count - 2].getText() + " " + m_operators[m_operators.Count - 1].getText() + " " + m_operands[m_operands.Count - 1].getText() + "\n");
+                    execute(m_operands[m_operands.Count - 2], m_operators[m_operators.Count - 1], m_operands[m_operands.Count - 1], i);
                     break;
                 case 'S':
                     m_tbout.AppendText("case S\n");
-                    OperatAdd(i);
+                    operatAdd(i);
                     //if (m_operators[m_operators.Count - 1].getText() == "(" && m_operands[m_operands.Count - 1].getCode() > 18)
                     //{
                     //    m_operators.RemoveAt(m_operators.Count - 1);
@@ -159,12 +152,12 @@ namespace Intepretator
                     break;
                 case 'F':
                     m_tbout.AppendText("case F\n");
-                    OperatAdd(i);
+                    operatAdd(i);
                     //user function
                     break;
                 case 'C':
                     m_tbout.AppendText("case C\n");
-                    OperatAdd(i);
+                    operatAdd(i);
                     if(m_operators[m_operators.Count - 2].getText() == "F")
                     {
                         m_operators.Add(new Token(m_operators[m_operators.Count - 2].getCode(), m_operators[m_operators.Count - 2].getType(), "F("));
@@ -186,15 +179,36 @@ namespace Intepretator
                     m_tbout.AppendText("case L\n");
                     Symbol tempSym = m_arStack[m_current].searchSymbol(m_operators[m_operators.Count() - 1].getCode());
                     //Symbol info2 contains information about which block id contains the function.
-                    Enter(tempSym.getInfo(2));
-                    //int temp_par = m_arStack[m_arStack.Count - 1].getBlock().getBlockNr();
-                    //AR_stack[AR_stack.Count - 1].GetTempBlock().symbols[i]
+                    m_arStack.Add(new AR(m_current, m_blockTemplates[tempSym.getInfo(2)]));
+                    setCurrent();
+                    int nrSymbols = m_arStack[m_current].getSymbolCount();
+
+                    //Find the symbol with the address to the last parameter.
+                    for (int j = 0; j < nrSymbols; j++)
+                    {
+                        //When the symbol corresponding to the last parameter is found, save the value of the parameter to the symbol.
+                        if (m_arStack[m_current].getSymbol(j).getAddress() == 1)
+                        {
+                            //TODO: Need to search for symbol I to get the correct value on token.
+                            m_arStack[m_current].getSymbol(j).setValue(m_operands[m_operands.Count() - m_arStack[m_current].getSymbol(j).getAddress()].getValue());
+                            //not sure if this should be removed here or somewhere else.
+                            m_operands.RemoveAt(m_operands.Count() - m_arStack[m_current].getSymbol(j).getAddress());
+                            break;
+                        }
+                    }
+                    interpretBlock();
+                    //Save return value as operand
+                    m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
+                    //Remove function operator
+                    m_operators.RemoveAt(m_operators.Count() - 1);
+                    m_arStack.RemoveAt(m_arStack.Count - 1);
+                    setCurrent();
                     //transfer last parameter
                     break;
             }
         }
 
-        public void Execute(Token p_Operand1, Token p_Operat, Token p_Operand2, int p_I)// tillfällig int
+        public void execute(Token p_Operand1, Token p_Operat, Token p_Operand2, int p_I)// tillfällig int
         {
             switch (p_Operat.getText())
             {
@@ -206,9 +220,9 @@ namespace Intepretator
                         if (m_arStack[m_current].getSymbol(i).getText() == p_Operand1.getText())
                         {
                             m_arStack[m_current].getSymbol(i).setValue(temp);
-                            TboutOperationExec();
+                            tboutOperationExec();
                             m_tbout.AppendText(m_arStack[m_current].getSymbol(i).getText() + " = " + m_arStack[m_current].getSymbol(i).getValue() + "\n");
-                            RemoveFromStack(p_Operand1, p_Operand2, p_Operat);
+                            removeFromStack(p_Operand1, p_Operand2, p_Operat);
                         }
                         else if (m_current != 0)
                         {
@@ -217,30 +231,30 @@ namespace Intepretator
                                 if (m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).getText() == p_Operand1.getText())
                                 {
                                     m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).setValue(temp);
-                                    TboutOperationExec();
+                                    tboutOperationExec();
                                     m_tbout.AppendText(m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).getText() + " = " + m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).getValue() + "\n");
-                                    RemoveFromStack(p_Operand1, p_Operand2, p_Operat);
+                                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
                                 }
                             }
                         }
                     }
                     break;
                 case "+":
-                    Addition(p_Operand1, p_Operand2);
-                    RemoveFromStack(p_Operand1, p_Operand2, p_Operat);
-                    ContinueExec(p_I);
+                    addition(p_Operand1, p_Operand2);
+                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                    continueExec(p_I);
                     break;
                 case "-":
-                    Subtraction(p_Operand1, p_Operand2);
-                    RemoveFromStack(p_Operand1, p_Operand2, p_Operat);
-                    ContinueExec(p_I);
+                    subtraction(p_Operand1, p_Operand2);
+                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                    continueExec(p_I);
                     break;
                 case "*":
-                    Multiplication(p_Operand1, p_Operand2);
-                    RemoveFromStack(p_Operand1, p_Operand2, p_Operat);
+                    multiplication(p_Operand1, p_Operand2);
+                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
                     if (m_arStack[m_current].getToken(p_I).getText() != ";")
                     {
-                        OperatAdd(p_I);
+                        operatAdd(p_I);
                     }
                     break;
                 case "/":
@@ -293,7 +307,7 @@ namespace Intepretator
             }
         }
 
-        public void SetTokenValue(Token p_Operand1, Token p_Operand2)
+        public void setTokenValue(Token p_Operand1, Token p_Operand2)
         {
             for (int i = 0; i < m_arStack.Count; i++)
             {
@@ -313,22 +327,22 @@ namespace Intepretator
 
         }
 
-        public void RemoveFromStack(Token p_Operand1, Token p_Operand2, Token p_Operat)
+        public void removeFromStack(Token p_Operand1, Token p_Operand2, Token p_Operat)
         {
             m_operands.Remove(p_Operand1);
             m_operands.Remove(p_Operand2);
             m_operators.Remove(p_Operat);
         }
 
-        public void ContinueExec(int p_I)
+        public void continueExec(int p_I)
         {
             if (m_operators.Count > 0 && m_operands.Count > 1)
             {
-                Execute(m_operands[m_operands.Count - 2], m_operators[m_operators.Count - 1], m_operands[m_operands.Count - 1], p_I);
+                execute(m_operands[m_operands.Count - 2], m_operators[m_operators.Count - 1], m_operands[m_operands.Count - 1], p_I);
             }
         }
 
-        public void CreateBlocks()
+        public void createBlocks()
         {
             string[][] blockStringArray = m_file.getBlockStringArray();
             for (int i = 0; i < blockStringArray.Length; i++)
@@ -372,7 +386,8 @@ namespace Intepretator
                             m_blockCounter++;
                             break;
                         case "###PROGRAMSLUT###":
-                            Enter(m_current);
+                            m_arStack.Add(new AR(m_current, m_blockTemplates[m_current]));
+                            interpretBlock();
                             break;
                     }
                 }
@@ -380,47 +395,47 @@ namespace Intepretator
         }
 
         //Methods for Append text in textbox.
-        public void TboutOperationExec()
+        public void tboutOperationExec()
         {
-            m_tbout.AppendText("Operation Executed \n");
+            m_tbout.AppendText("Operation executed \n");
         }
 
-        public void OperandAdd(int i)
+        public void operandAdd(int i)
         {
             m_operands.Add(m_arStack[m_current].getToken(i));
             m_tbout.AppendText("Operand Added: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
-        public void OperatAdd(int i)
+        public void operatAdd(int i)
         {
             m_operators.Add(m_arStack[m_current].getToken(i));
             m_tbout.AppendText("Operator Added: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
-        public void Addition(Token p_Operand1, Token p_Operand2)
+        public void addition(Token p_Operand1, Token p_Operand2)
         {
-            SetTokenValue(p_Operand1, p_Operand2);
+            setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() + p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
-            TboutOperationExec();
+            tboutOperationExec();
             m_tbout.AppendText(p_Operand1.getText() + " + " + p_Operand2.getText() + " = " + m_operands[m_operands.Count - 1].getValue() + "\n");
         }
 
-        public void Subtraction(Token p_Operand1, Token p_Operand2)
+        public void subtraction(Token p_Operand1, Token p_Operand2)
         {
-            SetTokenValue(p_Operand1, p_Operand2);
+            setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() - p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
-            TboutOperationExec();
+            tboutOperationExec();
             m_tbout.AppendText(p_Operand1.getText() + " - " + p_Operand2.getText() + " = " + m_operands[m_operands.Count - 1].getValue() + "\n");
         }
 
-        public void Multiplication(Token p_Operand1, Token p_Operand2)
+        public void multiplication(Token p_Operand1, Token p_Operand2)
         {
-            SetTokenValue(p_Operand1, p_Operand2);
+            setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() * p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
-            TboutOperationExec();
+            tboutOperationExec();
             m_tbout.AppendText(p_Operand1.getText() + " * " + p_Operand2.getText() + " = " + m_operands[m_operands.Count - 1].getValue() + "\n");
         }
     }
