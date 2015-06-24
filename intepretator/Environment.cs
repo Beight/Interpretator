@@ -75,6 +75,7 @@ namespace Intepretator
                                 m_tbout.AppendText("Block " + m_current + " Execution Complete\n");
                                 break;
                             }
+                            //TODO: Handle if statement.
 
                         }
                         break;
@@ -175,7 +176,7 @@ namespace Intepretator
                     break;
                 case 'L':
                     m_tbout.AppendText("case L\n");
-                    //Symbol tempSym = m_arStack[m_current].searchSymbol(m_operators[m_operators.Count() - 1].getCode());
+
                     Symbol tempSym = searchSymbol(m_operators[m_operators.Count() - 1].getCode());
                     //Symbol info2 contains information about which block id contains the function.
                     m_arStack.Add(new AR(m_current, m_blockTemplates[tempSym.getInfo(2)]));
@@ -187,8 +188,7 @@ namespace Intepretator
                     {
                         //When the symbol corresponding to the last parameter is found, save the value of the parameter to the symbol.
                         if (m_arStack[m_current].getSymbol(j).getAddress() == 1)
-                        {
-                            //TODO: Need to search for symbol I to get the correct value on token.                           
+                        {                         
                             m_arStack[m_current].getSymbol(j).setValue(m_operands[m_operands.Count() - m_arStack[m_current].getSymbol(j).getAddress()].getValue());
                             //not sure if this should be removed here or somewhere else.
                             m_operands.RemoveAt(m_operands.Count() - m_arStack[m_current].getSymbol(j).getAddress());
@@ -415,7 +415,6 @@ namespace Intepretator
 
         public void addition(Token p_Operand1, Token p_Operand2)
         {
-            //setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() + p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
             tboutOperationExec();
@@ -424,7 +423,6 @@ namespace Intepretator
 
         public void subtraction(Token p_Operand1, Token p_Operand2)
         {
-           // setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() - p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
             tboutOperationExec();
@@ -433,7 +431,6 @@ namespace Intepretator
 
         public void multiplication(Token p_Operand1, Token p_Operand2)
         {
-           // setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() * p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
             tboutOperationExec();
