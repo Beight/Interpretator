@@ -87,7 +87,6 @@ namespace Intepretator
                 if(m_symbols[i].getId() == p_id)
                     return m_symbols[i];
             }
-
             return null;
         }
 

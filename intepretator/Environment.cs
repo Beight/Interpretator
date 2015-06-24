@@ -54,21 +54,19 @@ namespace Intepretator
                     //Symbol
                     case 1:
                         //search for symbol to find if it's a function or not.
-                        Symbol tempSym = m_arStack[m_current].searchSymbol(m_arStack[m_current].getToken(i).getCode());
-
-                        if (tempSym != null)
+                        if (m_arStack[m_current].getToken(i).getCode() > 18)
                         {
+                            Symbol tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode());
                             if (tempSym.getKind() == 2)
                             {
                                 actions(m_matrix.GetAction(operatAction(m_operators[m_operators.Count - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
                                 break;
                             }
-                        }
-
-
-                        if (m_arStack[m_current].getToken(i).getCode() > 18)
-                        {
-                            operandAdd(i);
+                            else
+                            {
+                                m_arStack[m_current].getToken(i).setValue(tempSym.getValue());
+                                operandAdd(i);
+                            }
                         }
                         else
                         {
@@ -177,7 +175,8 @@ namespace Intepretator
                     break;
                 case 'L':
                     m_tbout.AppendText("case L\n");
-                    Symbol tempSym = m_arStack[m_current].searchSymbol(m_operators[m_operators.Count() - 1].getCode());
+                    //Symbol tempSym = m_arStack[m_current].searchSymbol(m_operators[m_operators.Count() - 1].getCode());
+                    Symbol tempSym = searchSymbol(m_operators[m_operators.Count() - 1].getCode());
                     //Symbol info2 contains information about which block id contains the function.
                     m_arStack.Add(new AR(m_current, m_blockTemplates[tempSym.getInfo(2)]));
                     setCurrent();
@@ -189,16 +188,18 @@ namespace Intepretator
                         //When the symbol corresponding to the last parameter is found, save the value of the parameter to the symbol.
                         if (m_arStack[m_current].getSymbol(j).getAddress() == 1)
                         {
-                            //TODO: Need to search for symbol I to get the correct value on token.
+                            //TODO: Need to search for symbol I to get the correct value on token.                           
                             m_arStack[m_current].getSymbol(j).setValue(m_operands[m_operands.Count() - m_arStack[m_current].getSymbol(j).getAddress()].getValue());
                             //not sure if this should be removed here or somewhere else.
                             m_operands.RemoveAt(m_operands.Count() - m_arStack[m_current].getSymbol(j).getAddress());
                             break;
                         }
                     }
+                    m_tbout.AppendText("Enter function\n");
                     interpretBlock();
                     //Save return value as operand
                     m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
+                    m_operands[m_operands.Count() - 1].setValue(tempSym.getValue());
                     //Remove function operator
                     m_operators.RemoveAt(m_operators.Count() - 1);
                     m_arStack.RemoveAt(m_arStack.Count - 1);
@@ -313,12 +314,12 @@ namespace Intepretator
             {
                 for (int j = 0; j < m_arStack[i].getSymbolCount(); j++)
                 {
-                    if (m_arStack[i].getSymbol(j).getText() == p_Operand1.getText())
+                    if (m_arStack[i].getSymbol(j).getId() == p_Operand1.getCode())
                     {
                         p_Operand1.setValue(m_arStack[i].getSymbol(j).getValue());
                     }
                     //break
-                    if (m_arStack[i].getSymbol(j).getText() == p_Operand2.getText())
+                    if (m_arStack[i].getSymbol(j).getId() == p_Operand2.getCode())
                     {
                         p_Operand2.setValue(m_arStack[i].getSymbol(j).getValue());
                     }
@@ -414,7 +415,7 @@ namespace Intepretator
 
         public void addition(Token p_Operand1, Token p_Operand2)
         {
-            setTokenValue(p_Operand1, p_Operand2);
+            //setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() + p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
             tboutOperationExec();
@@ -423,7 +424,7 @@ namespace Intepretator
 
         public void subtraction(Token p_Operand1, Token p_Operand2)
         {
-            setTokenValue(p_Operand1, p_Operand2);
+           // setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() - p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
             tboutOperationExec();
@@ -432,11 +433,24 @@ namespace Intepretator
 
         public void multiplication(Token p_Operand1, Token p_Operand2)
         {
-            setTokenValue(p_Operand1, p_Operand2);
+           // setTokenValue(p_Operand1, p_Operand2);
             m_operands.Add(new Token(p_Operand1.getValue() * p_Operand2.getValue(), p_Operand1.getCode(), p_Operand1.getType()));
             m_operands[m_operands.Count - 1].setText(m_operands[m_operands.Count - 1].getValue().ToString());
             tboutOperationExec();
             m_tbout.AppendText(p_Operand1.getText() + " * " + p_Operand2.getText() + " = " + m_operands[m_operands.Count - 1].getValue() + "\n");
+        }
+
+        public Symbol searchSymbol(int p_id)
+        {
+            Symbol ret = m_arStack[m_current].searchSymbol(p_id);
+            if (ret == null)
+            { 
+                int sf = m_arStack[m_current].getStaticF();
+                if (sf > -1)
+                    ret = m_arStack[sf].searchSymbol(p_id);
+            }
+
+            return ret;
         }
     }
 }
