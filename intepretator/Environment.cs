@@ -109,8 +109,23 @@ namespace Intepretator
                             if (m_arStack[m_current].getToken(i).getCode() == 11)
                             {
                                 actions('U', i);
-                               // if(m_operands[m_nrOperands.Count() - 1)
-                                //then.
+                                if (m_operands[m_nrOperands - 1].getValue() == 1)
+                                {
+                                    m_operands.RemoveAt(m_nrOperands - 1);
+                                    m_nrOperands--;
+                                    break;
+                                }
+                                else 
+                                {
+                                    m_operands.RemoveAt(m_nrOperands - 1);
+                                    m_nrOperands--;
+                                    for (i = i + 1;  i < m_arStack[m_current].getTokenCount(); i++)
+                                    {
+                                        if (m_arStack[m_current].getToken(i).getCode() == 12)
+                                            break;
+                                    }
+                                    break;
+                                }
                             }
                             if (m_arStack[m_current].getToken(i).getCode() == 12)
                             {
