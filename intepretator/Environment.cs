@@ -60,11 +60,29 @@ namespace Intepretator
                         //search for symbol to find if it's a function or not.
                         if (m_arStack[m_current].getToken(i).getCode() > 18)
                         {
-                            Symbol tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode());
+                            Symbol tempSym = null;
+
+                            //Special case
+                            //In some programs the function have the same SymbolId as a local symbol in the funciton block which makes it hard to 
+                            //differentiate between the two and that creates a problem when a function is recursive.
+                            //This if statement is supposed to go around that problem.
+                            if(m_arStack[m_current].getToken(i).getText() == "F" && m_arStack[m_current].getToken(i+1).getText() == "(" && m_current != 0)
+                            {
+                                for(int j = 0; j < m_arStack[m_current - 1].getSymbolCount(); j++)
+                                {
+                                    if (m_arStack[m_current - 1].getSymbol(j).getId() == m_arStack[m_current].getToken(i).getCode())
+                                        tempSym = m_arStack[m_current - 1].getSymbol(j);
+                                }
+                                
+                            }
+                            else
+                                tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode());
+
+
                             if (tempSym.getKind() == 2)
                             {
-                                actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
-                                break;
+                                    actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
+                                    break;
                             }
                             else
                             {
@@ -81,33 +99,11 @@ namespace Intepretator
                             }
                             if (m_arStack[m_current].getToken(i).getCode() == 10)
                             {
-                                //for (i = i + 1; i < m_arStack[m_current].getTokenCount(); i++)
-                                //{
-                                //    if (m_arStack[m_current].getToken(i).getCode() == 11)
-                                //    { 
-                                        
-                                //    }
-                                //    switch (m_arStack[m_current].getToken(i).getType())
-                                //    { 
-                                //        case 1:
-                                //            Symbol tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode());
-                                //            m_arStack[m_current].getToken(i).setValue(tempSym.getValue());
-                                //            operandAdd(i);
-                                //            break;
-                                //        case 2:
-                                //            operandAdd(i);
-                                //            break;
-                                //        case 3:
-                                //            operandAdd(i);
-                                //            break;
-                                //        case 5:
-                                //            actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
-                                //            break;
-                                //    }
-                                //}
+                                //if
                             }
                             if (m_arStack[m_current].getToken(i).getCode() == 11)
                             {
+                                //then
                                 actions('U', i);
                                 if (m_operands[m_nrOperands - 1].getValue() == 1)
                                 {
