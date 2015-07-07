@@ -71,7 +71,10 @@ namespace Intepretator
                                 for(int j = 0; j < m_arStack[m_current - 1].getSymbolCount(); j++)
                                 {
                                     if (m_arStack[m_current - 1].getSymbol(j).getId() == m_arStack[m_current].getToken(i).getCode())
+                                    {
                                         tempSym = m_arStack[m_current - 1].getSymbol(j);
+                                        break;
+                                    }
                                 }
                                 
                             }
@@ -226,37 +229,8 @@ namespace Intepretator
                     break;
                 case 'L':
                     m_tbout.AppendText("case L\n");
+                    functionCall();
 
-                    Symbol tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode());
-                    //Symbol info2 contains information about which block id contains the function.
-                    m_arStack.Add(new AR(m_current, m_blockTemplates[tempSym.getInfo(2)]));
-                    setCurrent();
-                    int nrSymbols = m_arStack[m_current].getSymbolCount();
-
-                    //Find the symbol with the address to the last parameter.
-                    for (int j = 0; j < nrSymbols; j++)
-                    {
-                        //When the symbol corresponding to the last parameter is found, save the value of the parameter to the symbol.
-                        if (m_arStack[m_current].getSymbol(j).getAddress() == 1)
-                        {                         
-                            m_arStack[m_current].getSymbol(j).setValue(m_operands[m_nrOperands - m_arStack[m_current].getSymbol(j).getAddress()].getValue());
-                            //not sure if this should be removed here or somewhere else.
-                            m_operands.RemoveAt(m_nrOperands - m_arStack[m_current].getSymbol(j).getAddress());
-                            m_nrOperands--;
-                            break;
-                        }
-                    }
-                    m_tbout.AppendText("Enter function\n");
-                    interpretBlock();
-                    //Save return value as operand
-                    m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
-                    m_nrOperands++;
-                    m_operands[m_nrOperands - 1].setValue(tempSym.getValue());
-                    //Remove function operator
-                    m_operators.RemoveAt(m_nrOperators - 1);
-                    m_nrOperators--;
-                    m_arStack.RemoveAt(m_arStack.Count - 1);
-                    setCurrent();
                     //transfer last parameter
                     break;
             }
@@ -280,13 +254,13 @@ namespace Intepretator
                         }
                         else if (m_current != 0)
                         {
-                            for (int j = 0; j < m_arStack[m_arStack[m_current].getStaticF()].getSymbolCount(); j++)
+                            for (int j = 0; j < m_arStack[m_arStack[m_current].getDynamicF()].getSymbolCount(); j++)
                             {
-                                if (m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).getText() == p_Operand1.getText())
+                                if (m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getText() == p_Operand1.getText())
                                 {
-                                    m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).setValue(temp);
+                                    m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).setValue(temp);
                                     tboutOperationExec();
-                                    m_tbout.AppendText(m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).getText() + " = " + m_arStack[m_arStack[m_current].getStaticF()].getSymbol(j).getValue() + "\n");
+                                    m_tbout.AppendText(m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getText() + " = " + m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getValue() + "\n");
                                     removeFromStack(p_Operand1, p_Operand2, p_Operat);
                                 }
                             }
@@ -316,7 +290,6 @@ namespace Intepretator
                 case ">":
                     greaterThan(p_Operand1, p_Operand2);
                     removeFromStack(p_Operand1, p_Operand2, p_Operat);
-
                     break;
             }
 
@@ -402,7 +375,10 @@ namespace Intepretator
         {
             if (m_nrOperators > 0 && m_nrOperands > 1)
             {
-                execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
+                if (m_operators[m_nrOperators - 1].getText() == "F(")
+                    functionCall();
+                else
+                    execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
             }
         }
 
@@ -519,6 +495,40 @@ namespace Intepretator
             }
 
             m_tbout.AppendText(p_Operand1.getText() + " > " + p_Operand2.getText() + " = " + m_operands[m_nrOperands - 1].getText() + "\n");
+        }
+
+        public void functionCall()
+        {
+            Symbol tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode());
+            //Symbol info2 contains information about which block id contains the function.
+            m_arStack.Add(new AR(m_current, m_blockTemplates[tempSym.getInfo(2)]));
+            setCurrent();
+            int nrSymbols = m_arStack[m_current].getSymbolCount();
+
+            //Find the symbol with the address to the last parameter.
+            for (int j = 0; j < nrSymbols; j++)
+            {
+                //When the symbol corresponding to the last parameter is found, save the value of the parameter to the symbol.
+                if (m_arStack[m_current].getSymbol(j).getAddress() == 1)
+                {
+                    m_arStack[m_current].getSymbol(j).setValue(m_operands[m_nrOperands - m_arStack[m_current].getSymbol(j).getAddress()].getValue());
+                    //not sure if this should be removed here or somewhere else.
+                    m_operands.RemoveAt(m_nrOperands - m_arStack[m_current].getSymbol(j).getAddress());
+                    m_nrOperands--;
+                    break;
+                }
+            }
+            m_tbout.AppendText("Enter function\n");
+            interpretBlock();
+            //Save return value as operand
+            m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
+            m_nrOperands++;
+            m_operands[m_nrOperands - 1].setValue(tempSym.getValue());
+            //Remove function operator
+            m_operators.RemoveAt(m_nrOperators - 1);
+            m_nrOperators--;
+            m_arStack.RemoveAt(m_arStack.Count - 1);
+            setCurrent();
         }
 
         public Symbol searchSymbol(int p_id)
