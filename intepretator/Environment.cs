@@ -411,24 +411,20 @@ namespace Intepretator
                             m_blockTemplates.Add(new Template(b));
                             break;
                         case "#KOD#":
-                            int t = -1;
                             for (int l = i; l < i + m_blockTemplates[m_blockCounter].getTokenCount(); l++)
                             {
-                                m_blockTemplates[m_blockCounter].setToken(t + 1, new Token(int.Parse(blockStringArray[l + 1][0]),
+                                m_blockTemplates[m_blockCounter].addToken(new Token(int.Parse(blockStringArray[l + 1][0]),
                                                                                 int.Parse(blockStringArray[l + 1][1]), blockStringArray[l + 1][2]));
-                                t++;
                             }
                             break;
                         case "#DEKLARATIONER#":
-                            int d = -1;
                             for (int l = i; l < i + m_blockTemplates[m_blockCounter].getSymbolCount(); l++)
                             {
-                                m_blockTemplates[m_blockCounter].setSymbol(d + 1, new Symbol(int.Parse(blockStringArray[l + 1][0]),
+                                m_blockTemplates[m_blockCounter].addSymbol(new Symbol(int.Parse(blockStringArray[l + 1][0]),
                                                                                 int.Parse(blockStringArray[l + 1][1]), int.Parse(blockStringArray[l + 1][2]),
                                                                                 int.Parse(blockStringArray[l + 1][3]), int.Parse(blockStringArray[l + 1][4]),
                                                                                 int.Parse(blockStringArray[l + 1][5]), int.Parse(blockStringArray[l + 1][6]),
                                                                                 blockStringArray[l + 1][9], 0));
-                                d++;
                             }
                             break;
                         case "##BLOCKSLUT##":
@@ -493,14 +489,13 @@ namespace Intepretator
         {
             if (p_Operand1.getValue() > p_Operand2.getValue())
             {
-                m_operands.Add(new Token(0, 0, "true"));
+                m_operands.Add(new Token(0, 0, "true", 1));
                 m_nrOperands++;
-                m_operands[m_nrOperands - 1].setValue(1);
             }
             else
             {
+                m_operands.Add(new Token(0, 0, "false", 0));
                 m_nrOperands++;
-                m_operands.Add(new Token(0, 0, "false"));
             }
 
             m_tbout.AppendText(p_Operand1.getText() + " > " + p_Operand2.getText() + " = " + m_operands[m_nrOperands - 1].getText() + "\n");

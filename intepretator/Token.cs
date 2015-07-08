@@ -43,6 +43,14 @@ namespace Intepretator
             m_value = p_value;
         }
 
+        public Token(int p_code, int p_type, string p_text, int p_value)
+        {
+            m_code = p_code;
+            m_type = p_type;
+            m_text = p_text;
+            m_value = p_value;
+        }
+
         public int getType()
         {
             return m_type;

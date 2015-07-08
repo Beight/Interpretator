@@ -12,17 +12,12 @@ namespace Intepretator
     class AR
     {
         private int m_dynamicF;
-        private int m_returnAddress;
         private Block m_block;
 
         public AR(int p_dynamicF, Template p_template)
         {
             m_dynamicF = p_dynamicF;
             m_block = new Block(p_template.getBlock());
-        }
-        public Block getBlock()
-        {
-            return m_block;
         }
         public int getStaticF()
         {

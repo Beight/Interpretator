@@ -30,6 +30,17 @@ namespace Intepretator
         {
             m_block.setSymbol(p_index, p_symbol);
         }
+
+        public void addSymbol(Symbol p_symbol)
+        {
+            m_block.addSymbol(p_symbol);
+        }
+
+        public void addToken(Token p_token)
+        {
+            m_block.addToken(p_token);
+        }
+        
         public int getTokenCount()
         {
             return m_block.getTokenCount();
