@@ -20,10 +20,6 @@ namespace Intepretator
         ///</summary>
         private int m_symbolCount;
         ///<summary>
-        ///Memory required by the block. Not used at the moment.
-        ///</summary>
-        private int m_memory;
-        ///<summary>
         ///Number of tokens contained in the block.
         ///</summary>
         private int m_tokenCount;
@@ -41,7 +37,6 @@ namespace Intepretator
             m_nr = p_nr;
             m_staticF = p_staticF;
             m_symbolCount = p_symbolCount;
-            m_memory = p_memory;
             m_tokenCount = p_tokenCount;
             m_tokens = new List<Token>(p_tokenCount);
             m_symbols = new List<Symbol>(p_symbolCount);
@@ -52,7 +47,6 @@ namespace Intepretator
             m_nr = p_block.getBlockNr();
             m_staticF = p_block.getStaticF();
             m_symbolCount = p_block.getSymbolCount();
-            m_memory = p_block.getMemory();
             m_tokenCount = p_block.getTokenCount();
 
             List<Token> tempTokens = p_block.getTokens();
@@ -60,7 +54,7 @@ namespace Intepretator
             m_tokens = new List<Token>();
             m_symbols = new List<Symbol>();
 
-            //List are cpoied in these loops to avoid shallow copies
+            //List are copied in these loops to avoid shallow copies
             for (int i = 0; i < m_tokenCount; i++)
             {
                 m_tokens.Add(new Token(tempTokens[i].getCode(), tempTokens[i].getType(), tempTokens[i].getText(), tempTokens[i].getValue()));
@@ -68,7 +62,7 @@ namespace Intepretator
             for (int i = 0; i < m_symbolCount; i++)
             {
                 m_symbols.Add(new Symbol(tempSymbol[i].getId(), tempSymbol[i].getType(), tempSymbol[i].getKind(), tempSymbol[i].getInfo(1), 
-                                         tempSymbol[i].getInfo(2), tempSymbol[i].getInfo(3), tempSymbol[i].getAddress(), tempSymbol[i].getText(), 0, tempSymbol[i].getValue()));
+                                         tempSymbol[i].getInfo(2), tempSymbol[i].getInfo(3), tempSymbol[i].getAddress(), tempSymbol[i].getText(), tempSymbol[i].getValue()));
             }
  
         }
@@ -89,10 +83,6 @@ namespace Intepretator
         {
             return m_tokenCount;
         }
-        public int getMemory()
-        {
-            return m_memory;
-        }
         public Token getToken(int p_index)
         {
             return m_tokens[p_index];
@@ -110,27 +100,14 @@ namespace Intepretator
             }
             return null;
         }
-
-        public void setToken(int p_index, Token p_token)
-        {
-            m_tokens[p_index] = p_token;
-        }
-
-        public void setSymbol(int p_index, Symbol p_symbol)
-        {
-            m_symbols[p_index] = p_symbol;
-        }
-
         public void addSymbol(Symbol p_symbol)
         {
             m_symbols.Add(p_symbol);
         }
-
         public void addToken(Token p_Token)
         {
             m_tokens.Add(p_Token);
         }
-
         private List<Token> getTokens()
         {
             return m_tokens;

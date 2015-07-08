@@ -56,47 +56,6 @@ M - stack user method (called by dot, not used here)
 		return ActionMatrix[i-1][j-1];
 	}
 	
-
-    //public void OtherAction(char A,OperatorPrecedence Q)
-    //{	Op P;
-    //    Lexeme T;
-		
-    //    P=Q.GetCurrentOp();
-    //    switch(A)
-    //    {	case 'F':	Q.PutOperator((Operator)P);
-    //                        ((Operator)P).Prolog(null);
-    //                        T=Q.GetToken();
-    //                        P=Q.MakeOp(T);
-    //                        break;
-    //        case 'M':	Q.GetOperator(); // remove dot
-    //                        Q.PutOperator((Operator)P);
-    //                        ((Operator)P).Prolog(Q.GetOperand());
-    //                        T=Q.GetToken();
-    //                        P=Q.MakeOp(T);
-    //                        break;
-    //        case 'D':	Q.GetOperator(); // remove dot
-    //                        Q.PutOperator((Operator)P);
-    //                        T=Q.GetToken();
-    //                        P=Q.MakeOp(T);
-    //                        break;
-    //        case 'T':	((OpPrec)Q).Transfer(Q.GetTopOperator());
-    //                        T=Q.GetToken();
-    //                        P=Q.MakeOp(T);
-    //                        break;
-    //        case 'C':	Q.PutOperator(((OpPrec)Q).NewFunPar(Q.GetTopOperator()));
-    //                        T=Q.GetToken();
-    //                        P=Q.MakeOp(T);
-    //                        break;
-    //        case 'L':	((OpPrec)Q).Transfer(Q.GetOperator());
-    //                        T=Q.GetToken();
-    //                        P=Q.MakeOp(T);
-    //                        break;
-    //        default :	T=null;
-    //                        break;
-    //    }
-    //    Q.SetCurrentOp(P);
-    //    Q.SetCurrentToken(T);
-    //}
 /* **********************************************************
    Follow Matrix
 Used for errorhandling!

@@ -36,13 +36,6 @@ namespace Intepretator
                 m_value = int.Parse(m_text);
         }
 
-        public Token(int p_value, int p_code, int p_type)
-        {
-            m_code = p_code;
-            m_type = p_type;
-            m_value = p_value;
-        }
-
         public Token(int p_code, int p_type, string p_text, int p_value)
         {
             m_code = p_code;

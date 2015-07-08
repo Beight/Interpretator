@@ -45,10 +45,6 @@ namespace Intepretator
         ///</summary>
         private int m_address;
         ///<summary>
-        ///Unknown.
-        ///</summary>
-        private int m_boundry;
-        ///<summary>
         ///Symbol value if it has one.
         ///</summary>
         private int m_value;
@@ -57,21 +53,7 @@ namespace Intepretator
         ///</summary>
         private string m_text; 
 
-
-        public Symbol(int p_id, int p_type, int p_kind, int p_info, int p_info2, int p_info3, int p_address, string p_text, int p_boundry)
-        {
-            m_id = p_id;
-            m_type = p_type;
-            m_kind = p_kind;  
-            m_info = p_info;
-            m_info2 = p_info2;
-            m_info3 = p_info3;
-            m_address = p_address;
-            m_text = p_text;
-            m_boundry = p_boundry;
-        }
-
-        public Symbol(int p_id, int p_type, int p_kind, int p_info, int p_info2, int p_info3, int p_address, string p_text, int p_boundry, int p_value)
+        public Symbol(int p_id, int p_type, int p_kind, int p_info, int p_info2, int p_info3, int p_address, string p_text, int p_value)
         {
             m_id = p_id;
             m_type = p_type;

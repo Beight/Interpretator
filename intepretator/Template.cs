@@ -15,22 +15,10 @@ namespace Intepretator
         {
             m_block = p_block;
         }
-
         public Block getBlock()
         {
             return m_block;
         }
-
-        public void setToken(int p_index, Token  p_token)
-        {
-            m_block.setToken(p_index, p_token);
-        }
-
-        public void setSymbol(int p_index, Symbol p_symbol)
-        {
-            m_block.setSymbol(p_index, p_symbol);
-        }
-
         public void addSymbol(Symbol p_symbol)
         {
             m_block.addSymbol(p_symbol);
@@ -40,7 +28,6 @@ namespace Intepretator
         {
             m_block.addToken(p_token);
         }
-        
         public int getTokenCount()
         {
             return m_block.getTokenCount();
