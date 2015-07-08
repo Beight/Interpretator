@@ -68,13 +68,19 @@ namespace Intepretator
                             //This if statement is supposed to go around that problem.
                             if(m_arStack[m_current].getToken(i).getText() == "F" && m_arStack[m_current].getToken(i+1).getText() == "(" && m_current != 0)
                             {
-                                for(int j = 0; j < m_arStack[m_current - 1].getSymbolCount(); j++)
+                                for (int j = 0; j < m_arStack.Count; j++)
                                 {
-                                    if (m_arStack[m_current - 1].getSymbol(j).getId() == m_arStack[m_current].getToken(i).getCode())
-                                    {
-                                        tempSym = m_arStack[m_current - 1].getSymbol(j);
+                                    tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode(), m_current - j);
+
+                                    if (tempSym.getKind() == 2)
                                         break;
-                                    }
+
+
+                                    //if (m_arStack[m_current - 1].getSymbol(j).getId() == m_arStack[m_current].getToken(i).getCode())
+                                    //{
+                                    //    tempSym = m_arStack[m_current - 1].getSymbol(j);
+                                    //    break;
+                                    //}
                                 }
                                 
                             }
@@ -128,7 +134,7 @@ namespace Intepretator
                             }
                             if (m_arStack[m_current].getToken(i).getCode() == 12)
                             {
-                                //else
+                                i = m_arStack[m_current].getTokenCount() - 2;
                             }
 
                         }
@@ -236,50 +242,51 @@ namespace Intepretator
             }
         }
 
-        public void execute(Token p_Operand1, Token p_Operat, Token p_Operand2, int p_I)// tillfällig int
+        public void execute(Token p_operand1, Token p_operator, Token p_operand2, int p_I)// tillfällig int
         {
-            switch (p_Operat.getText())
+            //Removes tokens from stack.
+            removeFromStack();
+
+            switch (p_operator.getText())
             {
                 case ":=":
                     int temp;
-                    temp = p_Operand2.getValue();
+                    temp = p_operand2.getValue();
                     for (int i = 0; i < m_arStack[m_current].getSymbolCount(); i++)
                     {
-                        if (m_arStack[m_current].getSymbol(i).getText() == p_Operand1.getText())
+                        if (m_arStack[m_current].getSymbol(i).getText() == p_operand1.getText())
                         {
                             m_arStack[m_current].getSymbol(i).setValue(temp);
                             tboutOperationExec();
                             m_tbout.AppendText(m_arStack[m_current].getSymbol(i).getText() + " = " + m_arStack[m_current].getSymbol(i).getValue() + "\n");
-                            removeFromStack(p_Operand1, p_Operand2, p_Operat);
                         }
                         else if (m_current != 0)
                         {
+                            //Set value on the symbol in the surrounding block.
                             for (int j = 0; j < m_arStack[m_arStack[m_current].getDynamicF()].getSymbolCount(); j++)
                             {
-                                if (m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getText() == p_Operand1.getText())
+                                if (m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getText() == p_operand1.getText())
                                 {
                                     m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).setValue(temp);
                                     tboutOperationExec();
                                     m_tbout.AppendText(m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getText() + " = " + m_arStack[m_arStack[m_current].getDynamicF()].getSymbol(j).getValue() + "\n");
-                                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                                    break;
                                 }
                             }
+                            break;
                         }
                     }
                     break;
                 case "+":
-                    addition(p_Operand1, p_Operand2);
-                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                    addition(p_operand1, p_operand2);
                     continueExec(p_I);
                     break;
                 case "-":
-                    subtraction(p_Operand1, p_Operand2);
-                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                    subtraction(p_operand1, p_operand2);
                     continueExec(p_I);
                     break;
                 case "*":
-                    multiplication(p_Operand1, p_Operand2);
-                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                    multiplication(p_operand1, p_operand2);
                     if (m_arStack[m_current].getToken(p_I).getText() != ";")
                     {
                         operatAdd(p_I);
@@ -288,8 +295,7 @@ namespace Intepretator
                 case "/":
                     break;
                 case ">":
-                    greaterThan(p_Operand1, p_Operand2);
-                    removeFromStack(p_Operand1, p_Operand2, p_Operat);
+                    greaterThan(p_operand1, p_operand2);
                     break;
             }
 
@@ -359,16 +365,16 @@ namespace Intepretator
 
         }
 
-        public void removeFromStack(Token p_Operand1, Token p_Operand2, Token p_Operat)
+        public void removeFromStack()
         {
-            if(m_operands.Remove(p_Operand1))
-                m_nrOperands--;
+            m_operands.RemoveAt(m_nrOperands - 1);
+            m_nrOperands--;
 
-            if(m_operands.Remove(p_Operand2))
-                m_nrOperands--;
+            m_operands.RemoveAt(m_nrOperands - 1);
+            m_nrOperands--;
 
-            if(m_operators.Remove(p_Operat))
-                m_nrOperators--;
+            m_operators.RemoveAt(m_nrOperators - 1);
+            m_nrOperators--;
         }
 
         public void continueExec(int p_i)
@@ -376,7 +382,10 @@ namespace Intepretator
             if (m_nrOperators > 0 && m_nrOperands > 1)
             {
                 if (m_operators[m_nrOperators - 1].getText() == "F(")
+                {
                     functionCall();
+                    continueExec(p_i);
+                }
                 else
                     execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
             }
@@ -499,27 +508,40 @@ namespace Intepretator
 
         public void functionCall()
         {
-            Symbol tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode());
+            Symbol tempSym = null;
+            for (int i = 0; i < m_arStack.Count; i++)
+            {
+                tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode(), m_current - i);
+                if(tempSym.getKind() == 2)
+                    break;
+            }
+            
+
+
             //Symbol info2 contains information about which block id contains the function.
             m_arStack.Add(new AR(m_current, m_blockTemplates[tempSym.getInfo(2)]));
             setCurrent();
             int nrSymbols = m_arStack[m_current].getSymbolCount();
 
             //Find the symbol with the address to the last parameter.
-            for (int j = 0; j < nrSymbols; j++)
+            for (int i = 0; i < nrSymbols; i++)
             {
                 //When the symbol corresponding to the last parameter is found, save the value of the parameter to the symbol.
-                if (m_arStack[m_current].getSymbol(j).getAddress() == 1)
+                if (m_arStack[m_current].getSymbol(i).getAddress() == 1)
                 {
-                    m_arStack[m_current].getSymbol(j).setValue(m_operands[m_nrOperands - m_arStack[m_current].getSymbol(j).getAddress()].getValue());
+                    m_arStack[m_current].getSymbol(i).setValue(m_operands[m_nrOperands - m_arStack[m_current].getSymbol(i).getAddress()].getValue());
                     //not sure if this should be removed here or somewhere else.
-                    m_operands.RemoveAt(m_nrOperands - m_arStack[m_current].getSymbol(j).getAddress());
+                    m_operands.RemoveAt(m_nrOperands - m_arStack[m_current].getSymbol(i).getAddress());
                     m_nrOperands--;
                     break;
                 }
             }
             m_tbout.AppendText("Enter function\n");
             interpretBlock();
+
+            tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode(), m_current);
+
+
             //Save return value as operand
             m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
             m_nrOperands++;
@@ -540,6 +562,13 @@ namespace Intepretator
                 if (sf > -1)
                     ret = m_arStack[sf].searchSymbol(p_id);
             }
+
+            return ret;
+        }
+
+        public Symbol searchSymbol(int p_id, int p_blkId)
+        {
+            Symbol ret = m_arStack[p_blkId].searchSymbol(p_id);
 
             return ret;
         }

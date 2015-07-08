@@ -18,7 +18,7 @@ namespace Intepretator
         public AR(int p_dynamicF, Template p_template)
         {
             m_dynamicF = p_dynamicF;
-            m_block = p_template.getBlock();
+            m_block = new Block(p_template.getBlock());
         }
         public Block getBlock()
         {

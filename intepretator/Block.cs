@@ -48,6 +48,19 @@ namespace Intepretator
 
         }
 
+        public Block(Block p_block)
+        {
+            m_nr = p_block.getBlockNr();
+            m_staticF = p_block.getStaticF();
+            m_symbolCount = p_block.getSymbolCount();
+            m_memory = p_block.getMemory();
+            m_tokenCount = p_block.getTokenCount();
+            m_tokens = new Token[m_tokenCount];
+            m_symbols = new Symbol[m_symbolCount];
+            p_block.getTokens().CopyTo(m_tokens, 0);
+            p_block.getSymbols().CopyTo(m_symbols, 0);
+        }
+
         //public void SearchID(){ }
         //public void GetToken(){ }
         //public void ParameterSearch() { }
@@ -98,6 +111,16 @@ namespace Intepretator
         public void setSymbol(int p_index, Symbol p_symbol)
         {
             m_symbols[p_index] = p_symbol;
+        }
+
+        private Token[] getTokens()
+        {
+            return m_tokens;
+        }
+
+        private Symbol[] getSymbols()
+        {
+            return m_symbols;
         }
     }
 }
