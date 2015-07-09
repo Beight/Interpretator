@@ -19,6 +19,7 @@ namespace Intepretator
         private MyControl m_matrix;
         private int m_nrOperands;
         private int m_nrOperators;
+        private String m_output;
 
 
         public Environment(FileManager p_filemanager, RichTextBox p_tb)
@@ -34,19 +35,19 @@ namespace Intepretator
             m_nrOperators = 0;
             m_nrOperands = 0;
         }
-
         public void interpretBlock()
         {
             //Loop through all the tokens
             for (int i = 0; i < m_arStack[m_current].getTokenCount(); i++)
             {
+                Token token = m_arStack[m_current].getToken(i);
                 //Switch case for finding token type.
-                switch (m_arStack[m_current].getToken(i).getType())
+                switch (token.getType())
                 {
                     //Symbol
                     case 1:
                         //search for symbol to find if it's a function or not.
-                        if (m_arStack[m_current].getToken(i).getCode() > 18)
+                        if (token.getCode() > 18)
                         {
                             Symbol tempSym = null;
 
@@ -54,12 +55,12 @@ namespace Intepretator
                             //In some tests the function have the same SymbolId as a local symbol in the funciton block which makes it hard to 
                             //differentiate between the two and that creates a problem when a function is recursive.
                             //This if statement is supposed to locate functions and make sure they're not mistaken for normal symbols.
-                            if (m_arStack[m_current].getToken(i).getText() == "F" && m_arStack[m_current].getToken(i + 1).getText() == "(" && m_current != 0)
+                            if (token.getText() == "F" && m_arStack[m_current].getToken(i + 1).getText() == "(" && m_current != 0)
                             {
                                 for (int j = 0; j < m_arStack.Count; j++)
                                 {
                                     //Find the function, if it's not in this block look in the surrounding block.
-                                    tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode(), m_current - j);
+                                    tempSym = m_arStack[m_current - j].searchSymbol(token.getCode());
                                     if (tempSym != null && tempSym.getKind() == 2)
                                         break;
                                 }
@@ -69,28 +70,71 @@ namespace Intepretator
                             {
                                 for (int j = 0; j < m_arStack.Count; j++)
                                 {
-                                    tempSym = searchSymbol(m_arStack[m_current].getToken(i).getCode(), m_current - j);
+                                    tempSym = m_arStack[m_current - j].searchSymbol(token.getCode());
                                     if (tempSym != null)
                                         break;
                                 }
                                 
                             }
 
+                            if(token.getText() == "write")
+                            {
+                                for (i = i + 2; i < m_arStack[m_current].getTokenCount(); i++)
+                                {
+                                    token = m_arStack[m_current].getToken(i);
+                                    if (token.getText() == ")")
+                                        break;
+
+                                    switch (token.getType())
+                                    {
+                                        case 1:
+                                            tempSym = m_arStack[m_current].searchSymbol(token.getCode());
+                                            if (tempSym != null)
+                                                m_output += tempSym.getValue().ToString();
+                                            break;
+                                        case 2:
+                                            m_output += token.getText();
+                                            break;
+                                        case 3:
+                                            m_output += token.getText();
+                                            break;
+                                        case 4:
+                                            m_output += token.getText();
+                                            break;
+                                    }
+                                }
+                                break;
+                            }
+
+                            if (token.getText() == "writln")
+                            {
+                                m_output += "\n";
+                                break;
+                            }
+
+                            if (token.getText() == "readint")
+                            {
+                                m_operands.Add(new Token(1, 2, "1", 1));
+                                m_nrOperands++;
+                                break;
+                            }
+
                             //Check if symbol is function or not.
                             if (tempSym.getKind() == 2)
                             {
-                                    actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
-                                    break;
+                                actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(token.getText())), i);
+                                break;
                             }
                             else
                             {
-                                m_arStack[m_current].getToken(i).setValue(tempSym.getValue());
+                                token.setValue(tempSym.getValue());
                                 operandAdd(i);
                             }
+
                         }
                         else
                         {
-                            if (m_arStack[m_current].getToken(i).getCode() == 2)
+                            if (token.getCode() == 2)
                             {
                                 m_tbout.AppendText("Block " + m_current + " Execution Complete\n");
                                 break;
@@ -98,37 +142,37 @@ namespace Intepretator
 
                             //if then statement, when the intepreter reads "then" it executes the 
                             //if statement on the stack and checks if the statement is true or false
-                            if (m_arStack[m_current].getToken(i).getCode() == 11)
+                            if (token.getCode() == 11)
                             {
                                 actions('U', i);
                                 if (m_operands[m_nrOperands - 1].getValue() == 1)
                                 {
                                     //statement was true continue as normal.
-                                    m_operands.RemoveAt(m_nrOperands - 1);
-                                    m_nrOperands--;
+                                    operandPop();
                                     break;
                                 }
                                 else 
                                 {
                                     //statement was false, skip all tokens until the else statement is reached and continue from there.
-                                    m_operands.RemoveAt(m_nrOperands - 1);
-                                    m_nrOperands--;
+                                    operandPop();
                                     for (i = i + 1;  i < m_arStack[m_current].getTokenCount(); i++)
                                     {
-                                        if (m_arStack[m_current].getToken(i).getCode() == 12)
+                                        if (token.getCode() == 12)
                                             break;
                                     }
                                     break;
                                 }
                             }
-                            if (m_arStack[m_current].getToken(i).getCode() == 12)
+                            if (token.getCode() == 12)
                             {
                                 //if the intepreter reaches this code it means that it has executed a "then" block of an if statement and the next
-                                //part is the "else" statement which should not be executed so we skip past it to the end of the block.(Assuming the "esle" statement is the last thing in the block)
+                                //part is the "else" statement which should not be executed so we skip past it to the end of the block.(Assuming the "else" statement is the last thing in the block)
                                 i = m_arStack[m_current].getTokenCount() - 2;
                             }
 
                         }
+
+
                         break;
                     //Int
                     case 2:
@@ -160,9 +204,9 @@ namespace Intepretator
                         break;
                     //Block calls
                     case 10:
-                        m_tbout.AppendText("Enter Block " + m_arStack[m_current].getToken(i).getCode() + "\n");
+                        m_tbout.AppendText("Enter Block " + token.getCode() + "\n");
 
-                        m_arStack.Add(new AR(m_current, m_blockTemplates[m_arStack[m_current].getToken(i).getCode()]));
+                        m_arStack.Add(new AR(m_current, m_blockTemplates[token.getCode()]));
                         m_current = m_arStack.Count - 1;
                         interpretBlock();
                         m_current = m_arStack[m_current].getDynamicF();
@@ -186,7 +230,6 @@ namespace Intepretator
                     break;
                 case 'S':
                     operatAdd(i);
-
                     //stack operator
                     break;
                 case 'A':
@@ -220,16 +263,22 @@ namespace Intepretator
                     //transfer parameter
                     break;
                 case 'L':
+                    //Add the "(" operator so it get's written out.
+                    operatAdd(i);
+                    //then delete it.
+                    operatPop();
+                    
                     functionCall();
-                    //transfer last parameter
                     break;
             }
         }
 
-        public void execute(Token p_operand1, Token p_operator, Token p_operand2, int p_I)// tillfällig int
+        public void execute(Token p_operand1, Token p_operator, Token p_operand2, int p_I)
         {
             //Removes tokens from stack.
-            removeFromStack();
+            operandPop();
+            operandPop();
+            operatPop();
 
             switch (p_operator.getText())
             {
@@ -304,19 +353,6 @@ namespace Intepretator
             }
         }
 
-
-        public void removeFromStack()
-        {
-            m_operands.RemoveAt(m_nrOperands - 1);
-            m_nrOperands--;
-
-            m_operands.RemoveAt(m_nrOperands - 1);
-            m_nrOperands--;
-
-            m_operators.RemoveAt(m_nrOperators - 1);
-            m_nrOperators--;
-        }
-
         public void continueExec(int p_i)
         {
             if (m_nrOperators > 0 && m_nrOperands > 1)
@@ -373,6 +409,8 @@ namespace Intepretator
                         case "###PROGRAMSLUT###":
                             m_arStack.Add(new AR(m_current, m_blockTemplates[m_current]));
                             interpretBlock();
+                            if (m_output.Length > 0)
+                                m_tbout.AppendText("Output:\n" + m_output);
                             break;
                     }
                 }
@@ -385,14 +423,26 @@ namespace Intepretator
         {
             m_operands.Add(m_arStack[m_current].getToken(i));
             m_nrOperands++;
-            m_tbout.AppendText("Operand Added: " + m_arStack[m_current].getToken(i).getText() + "\n");
+            m_tbout.AppendText("Operand stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
         public void operatAdd(int i)
         {
             m_operators.Add(m_arStack[m_current].getToken(i));
             m_nrOperators++;
-            m_tbout.AppendText("Operator Added: " + m_arStack[m_current].getToken(i).getText() + "\n");
+            m_tbout.AppendText("Operator stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
+        }
+
+        public void operatPop()
+        {
+            m_operators.RemoveAt(m_nrOperators - 1);
+            m_nrOperators--;
+        }
+
+        public void operandPop()
+        {
+            m_operands.RemoveAt(m_nrOperands - 1);
+            m_nrOperands--;
         }
 
         public void addition(Token p_operand1, Token p_operand2)
@@ -465,7 +515,7 @@ namespace Intepretator
             Symbol tempSym = null;
             for (int i = 0; i < m_arStack.Count; i++)
             {
-                tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode(), m_current - i);
+                tempSym = m_arStack[m_current - i].searchSymbol(m_operators[m_nrOperators - 1].getCode());
                 if(tempSym != null && tempSym.getKind() == 2)
                     break;
             }
@@ -488,42 +538,21 @@ namespace Intepretator
                     break;
                 }
             }
-            m_tbout.AppendText("Enter function\n");
+            m_tbout.AppendText("Enter function block\n");
             interpretBlock();
 
             //Find the return value symbol
-            tempSym = searchSymbol(m_operators[m_nrOperators - 1].getCode(), m_current);
+            tempSym = m_arStack[m_current].searchSymbol(m_operators[m_nrOperators - 1].getCode());
 
             //Save return value as operand
             m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
             m_nrOperands++;
             m_operands[m_nrOperands - 1].setValue(tempSym.getValue());
             //Remove function operator
-            m_operators.RemoveAt(m_nrOperators - 1);
-            m_nrOperators--;
+            operatPop();
             //block execution finished remove it from the stack
             m_arStack.RemoveAt(m_arStack.Count - 1);
             m_current = m_arStack.Count - 1;
-        }
-
-        public Symbol searchSymbol(int p_id)
-        {
-            Symbol ret = m_arStack[m_current].searchSymbol(p_id);
-            if (ret == null)
-            { 
-                int sf = m_arStack[m_current].getStaticF();
-                if (sf > -1)
-                    ret = m_arStack[sf].searchSymbol(p_id);
-            }
-
-            return ret;
-        }
-
-        public Symbol searchSymbol(int p_id, int p_blkId)
-        {
-            Symbol ret = m_arStack[p_blkId].searchSymbol(p_id);
-
-            return ret;
         }
     }
 }
