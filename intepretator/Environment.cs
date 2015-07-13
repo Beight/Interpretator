@@ -46,6 +46,7 @@ namespace Intepretator
                 {
                     //Symbol
                     case 1:
+                        //If the code is above 18 the token is handled as a symbol or standard procedure.
                         if (token.getCode() > 18)
                         {
                             if (token.getText() == "write")
@@ -53,12 +54,16 @@ namespace Intepretator
                                 i = write(i);
                                 break;
                             }
+                            //Standard procedure that adds a new line to the output string.
                             else if (token.getText() == "writln")
                             {
                                 m_output += "\n";
                                 break;
                             }
-
+                            //There were no clear explanation on how "readint" was supposed to be handled, the only intructions was that
+                            //it would give you an int. Because of that i made it so it just creates an int of the value 1 and puts it on the operand stack.
+                            //This is also a standard procedure but it wasn't required for this assignment but i needed to handle it somehow since it was
+                            //used in the tests that used write and writeln.
                             else if (token.getText() == "readint")
                             {
                                 m_operands.Add(new Token(1, 2, "1", 1));
@@ -73,11 +78,11 @@ namespace Intepretator
                         {
                             if (token.getCode() == 2)
                             {
-                                m_tbout.AppendText("Block " + m_current + " Execution Complete\n");
+                                m_tbout.AppendText("Block execution complete\n");
                                 break;
                             }
 
-                            //if then statement, when the intepreter reads "then" it executes the 
+                            //"if, then" statement, when the intepreter reads "then" it executes the 
                             //if statement on the stack and checks if the statement is true or false
                             if (token.getCode() == 11)
                             {
@@ -152,20 +157,16 @@ namespace Intepretator
             }
         }
 
-        private void actions(char c, int i)
+        private void actions(char p_c, int p_i)
         {
-            switch (c)
+            switch (p_c)
             {
                 case 'U':
-                    //execute
-                    if (m_nrOperands >= 2)
-                    {
                         m_tbout.AppendText("Execute " + m_operands[m_nrOperands - 2].getText() + " " + m_operators[m_nrOperators - 1].getText() + " " + m_operands[m_nrOperands - 1].getText() + "\n");
-                        execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], i);
-                    }
+                        execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
                     break;
                 case 'S':
-                    operatAdd(i);
+                    operatAdd(p_i);
                     //stack operator
                     break;
                 case 'A':
@@ -175,21 +176,15 @@ namespace Intepretator
                     //error
                     break;
                 case 'F':
-                    operatAdd(i);
+                    operatAdd(p_i);
                     //user function
                     break;
                 case 'C':
-                    operatAdd(i);
-                    if(m_operators[m_nrOperators - 2].getText() == "F")
-                    {
-                        m_operators.Add(new Token(m_operators[m_nrOperators - 2].getCode(), m_operators[m_nrOperators - 2].getType(), "F("));
-                        m_nrOperators++;
-                        m_operators.RemoveAt(m_nrOperators - 2);
-                        m_nrOperators--;
-                        m_operators.RemoveAt(m_nrOperators - 2);
-                        m_nrOperators--;
-                    }
-
+                    //Convert operators "F" and "(" to "F("
+                    m_operators.Add(new Token(m_operators[m_nrOperators - 1].getCode(), m_operators[m_nrOperators - 2].getType(), "F("));
+                    m_nrOperators++;
+                    m_operators.RemoveAt(m_nrOperators - 2);
+                    m_nrOperators--;
                     //function argument
                     break;
                 case 'P':
@@ -362,14 +357,12 @@ namespace Intepretator
         {
             m_operands.Add(m_arStack[m_current].getToken(i));
             m_nrOperands++;
-           // m_tbout.AppendText("Operand stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
         private void operatAdd(int i)
         {
             m_operators.Add(m_arStack[m_current].getToken(i));
             m_nrOperators++;
-            //m_tbout.AppendText("Operator stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
         private void operatPop()
@@ -429,6 +422,7 @@ namespace Intepretator
             }
             else
             {
+                //if it's not a function symbol just search like normal.
                 for (int j = 0; j < m_arStack.Count; j++)
                 {
                     tempSym = m_arStack[m_current - j].searchSymbol(p_token.getCode());
@@ -452,6 +446,8 @@ namespace Intepretator
 
         private int write(int p_i)
         {
+            //Standard write procedure. If a "write" is found in a block this function is executed and handles tokens that are sent in as arguments to the "write" function and saves them in a string
+            //when all blocks are executed the final string with all the writes are printed in the right textbox as Output.
             for (p_i = p_i + 1; p_i < m_arStack[m_current].getTokenCount(); p_i++)
             {
                 Token token = m_arStack[m_current].getToken(p_i);
@@ -459,6 +455,7 @@ namespace Intepretator
                 {
                     if(m_nrOperators > 0)
                     {
+                        //if the operators that are next on the stack is "()" remove them because this means that all the tokens in the "write" fucnction has been executed.
                         if(m_nrOperators >= 2 && m_operators[m_nrOperators - 1].getText() == ")" && m_operators[m_nrOperators - 2].getText() == "(")
                         {
                             operatPop();
@@ -468,7 +465,7 @@ namespace Intepretator
                             actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(token.getText())), p_i);
                     }
 
-
+                    //save operand value to output string.
                     m_output += m_operands[m_nrOperands - 1].getValue().ToString();
                     operandPop();
                     
@@ -478,6 +475,7 @@ namespace Intepretator
                 switch (token.getType())
                 {
                     case 1:
+
                         if (token.getText() == "readint")
                         {
                                 m_operands.Add(new Token(1, 2, "1", 1));
@@ -577,16 +575,15 @@ namespace Intepretator
                     break;
                 }
             }
-            m_tbout.AppendText("Enter function block\n");
+            m_tbout.AppendText("Enter function: " + tempSym.getText() + "\n");
             interpretBlock();
 
             //Find the return value symbol
             tempSym = m_arStack[m_current].searchSymbol(m_operators[m_nrOperators - 1].getCode());
 
             //Save return value as operand
-            m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText()));
+            m_operands.Add(new Token(tempSym.getId(), tempSym.getType(), tempSym.getText(), tempSym.getValue()));
             m_nrOperands++;
-            m_operands[m_nrOperands - 1].setValue(tempSym.getValue());
             //Remove function operator
             operatPop();
             //block execution finished remove it from the stack

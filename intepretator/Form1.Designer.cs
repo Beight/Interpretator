@@ -88,7 +88,7 @@
             this.Controls.Add(this.tbfile);
             this.Controls.Add(this.loadFile);
             this.Name = "Form1";
-            this.Text = "Intepretator";
+            this.Text = "Interpretator";
             this.ResumeLayout(false);
 
         }

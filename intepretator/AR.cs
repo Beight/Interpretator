@@ -19,10 +19,6 @@ namespace Intepretator
             m_dynamicF = p_dynamicF;
             m_block = new Block(p_template.getBlock());
         }
-        public int getStaticF()
-        {
-            return m_block.getStaticF();
-        }
         public Symbol getSymbol(int p_index)
         {
             return m_block.getSymbol(p_index);
