@@ -130,12 +130,15 @@ namespace Intepretator
                     //Operator
                     case 5:
                         if (m_nrOperators == 0)
+                        {
                             if (token.getText() != ";")
                                 operatAdd(i);
-                            else
-                                break;
+                        }
                         else
-                            actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText())), i);
+                        {
+                            char c = m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(m_arStack[m_current].getToken(i).getText()));
+                            actions(c, i);
+                        }
                         break;
                     //Error code
                     case 6:
@@ -146,7 +149,6 @@ namespace Intepretator
                     //Block calls
                     case 10:
                         m_tbout.AppendText("Enter Block " + token.getCode() + "\n");
-
                         m_arStack.Add(new AR(m_current, m_blockTemplates[token.getCode()]));
                         m_current = m_arStack.Count - 1;
                         interpretBlock();
@@ -162,8 +164,9 @@ namespace Intepretator
             switch (p_c)
             {
                 case 'U':
-                        m_tbout.AppendText("Execute " + m_operands[m_nrOperands - 2].getText() + " " + m_operators[m_nrOperators - 1].getText() + " " + m_operands[m_nrOperands - 1].getText() + "\n");
-                        execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
+                    //execute
+                    m_tbout.AppendText("Execute " + m_operands[m_nrOperands - 2].getText() + " " + m_operators[m_nrOperators - 1].getText() + " " + m_operands[m_nrOperands - 1].getText() + "\n");
+                    execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
                     break;
                 case 'S':
                     operatAdd(p_i);
@@ -294,6 +297,7 @@ namespace Intepretator
                 {
                     functionCall();
                     continueExec(p_i);
+
                 }
                 else
                     execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
