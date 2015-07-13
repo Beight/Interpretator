@@ -27,8 +27,10 @@ namespace Intepretator
         public bool Loadfile(RichTextBox p_tbfile)
         {
             m_browseFile.Title = "Choose a file";
-            m_browseFile.InitialDirectory = "\\.";
-            m_browseFile.Filter = "All files (*.*)|*.*|All files (*.*)|*.*";
+            string CombinedPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "..\\Tests");
+            m_browseFile.InitialDirectory = System.IO.Path.GetFullPath(CombinedPath);
+            m_browseFile.RestoreDirectory = true;
+            m_browseFile.Filter = "Test files (*.p1)|*.p1";
             m_browseFile.ShowDialog();
 
             try
