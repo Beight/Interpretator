@@ -193,17 +193,13 @@ namespace Intepretator
                     //function argument
                     break;
                 case 'P':
+                    operatPop();
                     //Remove(from stack and skip)
                     break;
                 case 'T':
                     //transfer parameter
                     break;
-                case 'L':
-                    //Add the "(" operator so it get's written out.
-                    operatAdd(i);
-                    //then delete it.
-                    operatPop();
-                    
+                case 'L':                   
                     functionCall();
                     break;
             }
@@ -223,7 +219,6 @@ namespace Intepretator
                     break;
                 case "+":
                     addition(p_operand1, p_operand2);
-                    //TODO: These operators need to be stacked somewhere else so the execution doesn't continue when there aren't any operands
                     if (m_arStack[m_current].getToken(p_I).getText() != ";")
                         operatAdd(p_I);
                     continueExec(p_I);
@@ -296,6 +291,10 @@ namespace Intepretator
         {
             if (m_nrOperators > 0 && m_nrOperands > 1)
             {
+                //remove left over end parenthesis.
+                if (m_operators[m_nrOperators - 1].getText() == ")")
+                    operatPop();
+
                 if (m_operators[m_nrOperators - 1].getText() == "F(")
                 {
                     functionCall();
@@ -304,6 +303,7 @@ namespace Intepretator
                 else
                     execute(m_operands[m_nrOperands - 2], m_operators[m_nrOperators - 1], m_operands[m_nrOperands - 1], p_i);
             }
+
         }
 
         public void createBlocks()
@@ -348,7 +348,7 @@ namespace Intepretator
                         case "###PROGRAMSLUT###":
                             m_arStack.Add(new AR(m_current, m_blockTemplates[m_current]));
                             interpretBlock();
-                            if (m_output != null)
+                            if(m_output != null)
                                 m_tbout.AppendText("Output:\n" + m_output);
                             break;
                     }
@@ -362,14 +362,14 @@ namespace Intepretator
         {
             m_operands.Add(m_arStack[m_current].getToken(i));
             m_nrOperands++;
-            m_tbout.AppendText("Operand stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
+           // m_tbout.AppendText("Operand stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
         private void operatAdd(int i)
         {
             m_operators.Add(m_arStack[m_current].getToken(i));
             m_nrOperators++;
-            m_tbout.AppendText("Operator stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
+            //m_tbout.AppendText("Operator stacked: " + m_arStack[m_current].getToken(i).getText() + "\n");
         }
 
         private void operatPop()
@@ -452,12 +452,26 @@ namespace Intepretator
 
         private int write(int p_i)
         {
-            for (p_i = p_i + 2; p_i < m_arStack[m_current].getTokenCount(); p_i++)
+            for (p_i = p_i + 1; p_i < m_arStack[m_current].getTokenCount(); p_i++)
             {
                 Token token = m_arStack[m_current].getToken(p_i);
-                if (token.getText() == ")")
+                if (token.getText() == ";")
                 {
+                    if(m_nrOperators > 0)
+                    {
+                        if(m_nrOperators >= 2 && m_operators[m_nrOperators - 1].getText() == ")" && m_operators[m_nrOperators - 2].getText() == "(")
+                        {
+                            operatPop();
+                            operatPop();
+                        }
+                        else
+                            actions(m_matrix.GetAction(operatAction(m_operators[m_nrOperators - 1].getText()), operatAction(token.getText())), p_i);
+                    }
+
+
                     m_output += m_operands[m_nrOperands - 1].getValue().ToString();
+                    operandPop();
+                    
                     return p_i + 1;
                 }
 
