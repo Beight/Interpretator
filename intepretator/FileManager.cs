@@ -24,7 +24,7 @@ namespace Intepretator
             m_tempStringList = new List<string>();
         }
 
-        public void Loadfile(RichTextBox p_tbfile)
+        public bool Loadfile(RichTextBox p_tbfile)
         {
             m_browseFile.Title = "Choose a file";
             m_browseFile.InitialDirectory = "\\.";
@@ -67,9 +67,9 @@ namespace Intepretator
             }
             catch (System.IndexOutOfRangeException e)
             {
-
-                return;
+                return false;
             }
+            return true;
         }
 
         public string[][] getBlockStringArray()

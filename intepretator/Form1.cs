@@ -11,31 +11,32 @@ namespace Intepretator
 {
     public partial class Form1 : Form
     {
-        Environment enviro;
-        FileManager file;
+        Environment m_environment;
+        FileManager m_file;
+        bool m_fileloaded;
 
         public Form1()
         {
-           
             InitializeComponent();
-            //file = new FileManager();
-            //enviro = new Environment(file, tbconverted);
+            m_fileloaded = false;
         }
 
         private void loadFile_Click(object sender, EventArgs e)
         {
             tbfile.Clear();
-            file = new FileManager();
-            file.Loadfile(tbfile);
+            m_file = new FileManager();
+            m_fileloaded = m_file.Loadfile(tbfile);
             tbconverted.Clear();
             
         }
 
         private void Convert_Click(object sender, EventArgs e)
         {
-            
-            enviro = new Environment(file, tbconverted);
-            enviro.createBlocks();
+            if (m_fileloaded)
+            {
+                m_environment = new Environment(m_file, tbconverted);
+                m_environment.createBlocks();
+            }
         }
 
         public void tbfile_TextChanged(object sender, EventArgs e)
